@@ -97,7 +97,7 @@ public class NacosPropertySourceLocator implements PropertySourceLocator {
 
 		CompositePropertySource composite = new CompositePropertySource(
 				NACOS_PROPERTY_SOURCE_NAME);
-
+		// 加载配置优先级
 		loadSharedConfiguration(composite);
 		loadExtConfiguration(composite);
 		loadApplicationConfiguration(composite, dataIdPrefix, nacosConfigProperties, env);

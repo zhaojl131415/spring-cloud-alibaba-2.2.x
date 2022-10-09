@@ -105,7 +105,7 @@ public class NacosContextRefresher
 	}
 
 	/**
-	 * register Nacos Listeners.
+	 * register Nacos Listeners. 注册监听器
 	 */
 	private void registerNacosListenersForApplications() {
 		if (isRefreshEnabled()) {
