@@ -40,12 +40,20 @@ public class SentinelWebMvcConfigurer implements WebMvcConfigurer {
 	@Autowired
 	private Optional<SentinelWebInterceptor> sentinelWebInterceptorOptional;
 
+	/**
+	 * 添加拦截器
+	 * @param registry
+	 */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		if (!sentinelWebInterceptorOptional.isPresent()) {
 			return;
 		}
 		SentinelProperties.Filter filterConfig = sentinelProperties.getFilter();
+		/**
+		 * 添加web拦截器:SentinelWebInterceptor(见Sentinel源码)
+		 * @see SentinelWebInterceptor
+		 */
 		registry.addInterceptor(sentinelWebInterceptorOptional.get())
 				.order(filterConfig.getOrder())
 				.addPathPatterns(filterConfig.getUrlPatterns());

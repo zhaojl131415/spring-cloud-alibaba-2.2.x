@@ -45,6 +45,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnProperty(name = "spring.cloud.sentinel.enabled", matchIfMissing = true)
+/** 注入SentinelWebInterceptor */
 @ConditionalOnClass(SentinelWebInterceptor.class)
 @EnableConfigurationProperties(SentinelProperties.class)
 public class SentinelWebAutoConfiguration implements WebMvcConfigurer {
@@ -64,6 +65,11 @@ public class SentinelWebAutoConfiguration implements WebMvcConfigurer {
 	@Autowired
 	private Optional<RequestOriginParser> requestOriginParserOptional;
 
+	/**
+	 * 往spring容器中注入: SentinelWebInterceptor(见Sentinel源码)
+	 * @param sentinelWebMvcConfig
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnProperty(name = "spring.cloud.sentinel.filter.enabled",
 			matchIfMissing = true)
@@ -100,6 +106,9 @@ public class SentinelWebAutoConfiguration implements WebMvcConfigurer {
 		return sentinelWebMvcConfig;
 	}
 
+	/**
+	 * 往spring容器中注入: SentinelWebMvcConfigurer
+	 */
 	@Bean
 	@ConditionalOnProperty(name = "spring.cloud.sentinel.filter.enabled",
 			matchIfMissing = true)
