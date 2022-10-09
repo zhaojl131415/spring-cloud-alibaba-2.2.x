@@ -136,6 +136,11 @@ public class SentinelAutoConfiguration {
 
 	}
 
+	/**
+	 * 注入SentinelResourceAspect
+	 * 对@SentinelResource注解的方法进行增强, 执行sentinel的管控, 实现见Sentinel源码
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public SentinelResourceAspect sentinelResourceAspect() {
