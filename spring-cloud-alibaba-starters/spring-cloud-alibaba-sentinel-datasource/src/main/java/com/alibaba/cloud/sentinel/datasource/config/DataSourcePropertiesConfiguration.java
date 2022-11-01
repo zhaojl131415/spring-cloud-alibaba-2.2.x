@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.ObjectUtils;
 
 /**
+ * 通过配置属性使用。读取前缀为spring.cloud.sentinel.datasource的配置
  * Using By ConfigurationProperties.
  *
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
@@ -40,6 +41,10 @@ public class DataSourcePropertiesConfiguration {
 
 	private FileDataSourceProperties file;
 
+	/**
+	 * nacos 关于规则配置数据源的属性
+	 * 读取前缀为spring.cloud.sentinel.datasource.nacos的配置
+	 */
 	private NacosDataSourceProperties nacos;
 
 	private ZookeeperDataSourceProperties zk;

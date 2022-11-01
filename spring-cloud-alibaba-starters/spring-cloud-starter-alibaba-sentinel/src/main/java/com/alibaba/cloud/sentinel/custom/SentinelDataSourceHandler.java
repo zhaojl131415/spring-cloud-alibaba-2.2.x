@@ -25,8 +25,10 @@ import java.util.Optional;
 
 import com.alibaba.cloud.sentinel.SentinelProperties;
 import com.alibaba.cloud.sentinel.datasource.config.AbstractDataSourceProperties;
+import com.alibaba.cloud.sentinel.datasource.config.NacosDataSourceProperties;
 import com.alibaba.cloud.sentinel.datasource.converter.JsonConverter;
 import com.alibaba.cloud.sentinel.datasource.converter.XmlConverter;
+import com.alibaba.cloud.sentinel.datasource.factorybean.NacosDataSourceFactoryBean;
 import com.alibaba.csp.sentinel.datasource.AbstractDataSource;
 import com.alibaba.csp.sentinel.datasource.ReadableDataSource;
 import org.slf4j.Logger;
@@ -40,6 +42,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
+ * Sentinel 读数据源处理器, 处理spring.cloud.sentinel.datasource的配置
  * Sentinel {@link ReadableDataSource} Handler Handle the configurations of
  * 'spring.cloud.sentinel.datasource'.
  *
@@ -74,8 +77,13 @@ public class SentinelDataSourceHandler implements SmartInitializingSingleton {
 		this.env = env;
 	}
 
+	/**
+	 * spring 扩展点:
+	 * 当所有单例 bean 都初始化完成以后， Spring的IOC容器会回调该接口的 afterSingletonsInstantiated()方法。
+	 */
 	@Override
 	public void afterSingletonsInstantiated() {
+		// 获取Sentinel数据源属性配置, 进行遍历
 		sentinelProperties.getDatasource()
 				.forEach((dataSourceName, dataSourceProperties) -> {
 					try {
@@ -86,10 +94,18 @@ public class SentinelDataSourceHandler implements SmartInitializingSingleton {
 									+ dataSourceProperties.getValidField());
 							return;
 						}
+						/**
+						 * @see NacosDataSourceProperties
+						 */
 						AbstractDataSourceProperties abstractDataSourceProperties = dataSourceProperties
 								.getValidDataSourceProperties();
 						abstractDataSourceProperties.setEnv(env);
 						abstractDataSourceProperties.preCheck(dataSourceName);
+						/**
+						 * 注册
+						 * @see NacosDataSourceProperties
+						 * flow-rules-sentinel-nacos-datasource
+						 */
 						registerBean(abstractDataSourceProperties, dataSourceName
 								+ "-sentinel-" + validFields.get(0) + "-datasource");
 					}
@@ -202,10 +218,15 @@ public class SentinelDataSourceHandler implements SmartInitializingSingleton {
 			String dataSourceName) {
 		BeanDefinitionBuilder builder = parseBeanDefinition(dataSourceProperties,
 				dataSourceName);
-
+		// 注册BD
 		this.beanFactory.registerBeanDefinition(dataSourceName,
 				builder.getBeanDefinition());
 		// init in Spring
+		/**
+		 * 通过bean工厂获取数据源对象
+		 * @see NacosDataSourceFactoryBean#getObject()
+		 * @see com.alibaba.csp.sentinel.datasource.nacos.NacosDataSource
+		 */
 		AbstractDataSource newDataSource = (AbstractDataSource) this.beanFactory
 				.getBean(dataSourceName);
 

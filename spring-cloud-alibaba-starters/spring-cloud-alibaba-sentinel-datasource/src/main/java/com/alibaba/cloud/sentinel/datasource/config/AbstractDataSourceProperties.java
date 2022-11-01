@@ -97,9 +97,18 @@ public class AbstractDataSourceProperties {
 
 	}
 
+	/**
+	 *
+	 * @param dataSource {@link com.alibaba.csp.sentinel.datasource.nacos.NacosDataSource}
+	 */
 	public void postRegister(AbstractDataSource dataSource) {
+		// 添加监听器, 并加载规则
 		switch (this.getRuleType()) {
-		case FLOW:
+			case FLOW:
+			/**
+			 * 流控规则: 添加监听器, 并加载流控规则
+			 * 详情见sentinel源码
+			 */
 			FlowRuleManager.register2Property(dataSource.getProperty());
 			break;
 		case DEGRADE:

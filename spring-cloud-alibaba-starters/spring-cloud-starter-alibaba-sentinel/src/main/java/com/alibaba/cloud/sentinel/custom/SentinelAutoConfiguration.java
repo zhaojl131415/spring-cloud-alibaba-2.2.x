@@ -157,6 +157,13 @@ public class SentinelAutoConfiguration {
 		return new SentinelBeanPostProcessor(applicationContext);
 	}
 
+	/**
+	 * spring容器注入SentinelDataSourceHandler
+	 * @param beanFactory
+	 * @param sentinelProperties
+	 * @param env
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public SentinelDataSourceHandler sentinelDataSourceHandler(

@@ -23,6 +23,7 @@ import com.alibaba.cloud.sentinel.datasource.factorybean.NacosDataSourceFactoryB
 import org.springframework.util.StringUtils;
 
 /**
+ * Nacos配置: 读取前缀为spring.cloud.sentinel.datasource.nacos的配置
  * Nacos Properties class Using by {@link DataSourcePropertiesConfiguration} and
  * {@link NacosDataSourceFactoryBean}.
  *

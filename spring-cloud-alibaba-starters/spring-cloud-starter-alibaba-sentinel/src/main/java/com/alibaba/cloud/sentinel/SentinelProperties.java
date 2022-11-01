@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 /**
+ * Sentinel属性配置类: 读取前缀为spring.cloud.sentinel的配置
  * {@link ConfigurationProperties} for Sentinel.
  *
  * @author xiaojing
@@ -62,6 +63,8 @@ public class SentinelProperties {
 
 	/**
 	 * Configurations about datasource, like 'nacos', 'apollo', 'file', 'zookeeper'.
+	 * 有关数据源的配置，例如“nacos”、“apollo”、“file”、“zookeeper”。
+	 * 读取前缀为spring.cloud.sentinel.datasource的配置
 	 */
 	private Map<String, DataSourcePropertiesConfiguration> datasource = new TreeMap<>(
 			String.CASE_INSENSITIVE_ORDER);
