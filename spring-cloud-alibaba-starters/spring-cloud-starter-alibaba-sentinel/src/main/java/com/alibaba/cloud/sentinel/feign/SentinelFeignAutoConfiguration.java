@@ -36,6 +36,7 @@ public class SentinelFeignAutoConfiguration {
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
+	// 需要yml配置feign.sentinel.enabled
 	@ConditionalOnProperty(name = "feign.sentinel.enabled")
 	public Feign.Builder feignSentinelBuilder() {
 		return SentinelFeign.builder();

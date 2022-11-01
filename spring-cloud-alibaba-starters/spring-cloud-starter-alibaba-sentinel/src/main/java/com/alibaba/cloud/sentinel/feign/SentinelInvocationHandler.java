@@ -38,6 +38,8 @@ import feign.hystrix.FallbackFactory;
 import static feign.Util.checkNotNull;
 
 /**
+ * 动态代理: 因为feign是通过动态代理来实现的, 所以这里直接实现动态代理的接口, 来对feign处理.
+ * InvocationHandler处理被Sentinel保护的调用
  * {@link InvocationHandler} handle invocation that protected by Sentinel.
  *
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
@@ -65,6 +67,9 @@ public class SentinelInvocationHandler implements InvocationHandler {
 		this.dispatch = checkNotNull(dispatch, "dispatch");
 	}
 
+	/**
+	 * 动态代理:
+	 */
 	@Override
 	public Object invoke(final Object proxy, final Method method, final Object[] args)
 			throws Throwable {
@@ -102,8 +107,11 @@ public class SentinelInvocationHandler implements InvocationHandler {
 						+ ":" + hardCodedTarget.url() + methodMetadata.template().path();
 				Entry entry = null;
 				try {
+					// 获取上下文
 					ContextUtil.enter(resourceName);
+					// 进入资源保护链路: sentinel关键代码
 					entry = SphU.entry(resourceName, EntryType.OUT, 1, args);
+					// 执行业务逻辑
 					result = methodHandler.invoke(args);
 				}
 				catch (Throwable ex) {
