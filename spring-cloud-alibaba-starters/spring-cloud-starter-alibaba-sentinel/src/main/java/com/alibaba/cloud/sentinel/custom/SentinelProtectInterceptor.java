@@ -37,6 +37,8 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * 拦截器: 处理ribbon.
+ * 实现了请求拦截器的顶层接口, 通过ribbon调用肯定会走到这个拦截器.
  * Interceptor using by SentinelRestTemplate.
  *
  * @author <a href="mailto:fangjian0423@gmail.com">Jim</a>
@@ -77,6 +79,7 @@ public class SentinelProtectInterceptor implements ClientHttpRequestInterceptor 
 		Entry hostWithPathEntry = null;
 		ClientHttpResponse response = null;
 		try {
+			// sentinel核心代码
 			hostEntry = SphU.entry(hostResource, EntryType.OUT);
 			if (entryWithPath) {
 				hostWithPathEntry = SphU.entry(hostWithPathResource, EntryType.OUT);
@@ -89,7 +92,9 @@ public class SentinelProtectInterceptor implements ClientHttpRequestInterceptor 
 			return response;
 		}
 		catch (Throwable e) {
+			// 异常处理
 			if (BlockException.isBlockException(e)) {
+				// 处理阻塞异常
 				return handleBlockException(request, body, execution, (BlockException) e);
 			}
 			else {
@@ -118,7 +123,7 @@ public class SentinelProtectInterceptor implements ClientHttpRequestInterceptor 
 	private ClientHttpResponse handleBlockException(HttpRequest request, byte[] body,
 			ClientHttpRequestExecution execution, BlockException ex) {
 		Object[] args = new Object[] { request, body, execution, ex };
-		// handle degrade
+		// handle degrade 处理熔断降级方法
 		if (isDegradeFailure(ex)) {
 			Method fallbackMethod = extractFallbackMethod(sentinelRestTemplate.fallback(),
 					sentinelRestTemplate.fallbackClass());
@@ -129,7 +134,7 @@ public class SentinelProtectInterceptor implements ClientHttpRequestInterceptor 
 				return new SentinelClientHttpResponse();
 			}
 		}
-		// handle flow
+		// handle flow 处理限流阻塞
 		Method blockHandler = extractBlockHandlerMethod(
 				sentinelRestTemplate.blockHandler(),
 				sentinelRestTemplate.blockHandlerClass());
