@@ -46,6 +46,7 @@ import org.springframework.validation.annotation.Validated;
 public class SentinelProperties {
 
 	/**
+	 * 取消控制台懒加载，spring容器启动即连接Sentinel
 	 * Earlier initialize heart-beat when the spring container starts when the transport
 	 * dependency is on classpath, the configuration is effective.
 	 */

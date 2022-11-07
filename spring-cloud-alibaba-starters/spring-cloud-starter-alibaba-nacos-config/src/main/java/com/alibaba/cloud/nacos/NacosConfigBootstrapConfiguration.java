@@ -29,6 +29,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * Nacos Config Bootstrap配置
+ *
  * @author xiaojing
  * @author freeman
  */
@@ -42,6 +44,11 @@ public class NacosConfigBootstrapConfiguration {
 		return new NacosConfigProperties();
 	}
 
+	/**
+	 * Nacos 配置中心管理器:
+	 * @param nacosConfigProperties
+	 * @return
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public NacosConfigManager nacosConfigManager(

@@ -61,12 +61,23 @@ public class NacosConfigAutoConfiguration {
 		return new NacosRefreshHistory();
 	}
 
+	/**
+	 * 注入Nacos 配置中心管理器:
+	 * @param nacosConfigProperties
+	 * @return
+	 */
 	@Bean
 	public NacosConfigManager nacosConfigManager(
 			NacosConfigProperties nacosConfigProperties) {
 		return new NacosConfigManager(nacosConfigProperties);
 	}
 
+	/**
+	 * 注入Nacos 上下文刷新器
+	 * @param nacosConfigManager
+	 * @param nacosRefreshHistory
+	 * @return
+	 */
 	@Bean
 	public NacosContextRefresher nacosContextRefresher(
 			NacosConfigManager nacosConfigManager,

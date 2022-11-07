@@ -91,6 +91,10 @@ public class NacosContextRefresher
 		this.configService = configService;
 	}
 
+	/**
+	 * 因为实现了ApplicationListener接口, 重写的此方法
+	 * @param event
+	 */
 	@Override
 	public void onApplicationEvent(ApplicationReadyEvent event) {
 		// many Spring context
@@ -105,7 +109,7 @@ public class NacosContextRefresher
 	}
 
 	/**
-	 * register Nacos Listeners. 注册监听器
+	 * register Nacos Listeners. 注册Nacos监听器
 	 */
 	private void registerNacosListenersForApplications() {
 		if (isRefreshEnabled()) {
@@ -115,11 +119,17 @@ public class NacosContextRefresher
 					continue;
 				}
 				String dataId = propertySource.getDataId();
+				// 注册Nacos监听器
 				registerNacosListener(propertySource.getGroup(), dataId);
 			}
 		}
 	}
 
+	/**
+	 * 注册Nacos监听器
+	 * @param groupKey
+	 * @param dataKey
+	 */
 	private void registerNacosListener(final String groupKey, final String dataKey) {
 		String key = NacosPropertySourceRepository.getMapKey(dataKey, groupKey);
 		Listener listener = listenerMap.computeIfAbsent(key,
@@ -129,6 +139,7 @@ public class NacosContextRefresher
 							String configInfo) {
 						refreshCountIncrement();
 						nacosRefreshHistory.addRefreshRecord(dataId, group, configInfo);
+						// 发布事件
 						applicationContext.publishEvent(
 								new RefreshEvent(this, null, "Refresh Nacos config"));
 						if (log.isDebugEnabled()) {

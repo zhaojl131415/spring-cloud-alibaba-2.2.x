@@ -40,6 +40,9 @@ public class NacosConfigManager {
 		this.nacosConfigProperties = nacosConfigProperties;
 		// Compatible with older code in NacosConfigProperties,It will be deleted in the
 		// future.
+		/**
+		 * 创建Nacos配置中心服务
+		 */
 		createConfigService(nacosConfigProperties);
 	}
 
@@ -52,6 +55,9 @@ public class NacosConfigManager {
 			synchronized (NacosConfigManager.class) {
 				try {
 					if (Objects.isNull(service)) {
+						/**
+						 * 通过Nacos工厂类创建配置中心服务, 详见Nacos源码
+						 */
 						service = NacosFactory.createConfigService(
 								nacosConfigProperties.assembleConfigServiceProperties());
 					}
