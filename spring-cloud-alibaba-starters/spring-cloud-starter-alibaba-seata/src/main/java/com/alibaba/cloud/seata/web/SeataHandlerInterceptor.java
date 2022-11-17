@@ -27,6 +27,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
+ *
+ * 实现了spring mvc的处理器拦截器, 会在请求时执行拦截处理
+ *
  * @author xiaojing
  *
  * Seata HandlerInterceptor, Convert Seata information into
@@ -43,13 +46,16 @@ public class SeataHandlerInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
 			Object handler) {
+		// 获取全局事务id, 对于feign的被调用方: 库存服务而言, 第一次调用时应该是取不到全局事务id的
 		String xid = RootContext.getXID();
+		// 从请求的header中获取全局事务id
 		String rpcXid = request.getHeader(RootContext.KEY_XID);
 		if (log.isDebugEnabled()) {
 			log.debug("xid in RootContext {} xid in RpcContext {}", xid, rpcXid);
 		}
 
 		if (StringUtils.isBlank(xid) && rpcXid != null) {
+			// 库存服务重新绑定全局事务id
 			RootContext.bind(rpcXid);
 			if (log.isDebugEnabled()) {
 				log.debug("bind {} to RootContext", rpcXid);

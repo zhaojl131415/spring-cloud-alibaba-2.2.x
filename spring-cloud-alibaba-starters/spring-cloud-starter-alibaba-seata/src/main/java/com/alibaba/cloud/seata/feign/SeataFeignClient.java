@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.cloud.seata.web.SeataHandlerInterceptor;
 import feign.Client;
 import feign.Request;
 import feign.Response;
@@ -31,7 +32,12 @@ import io.seata.core.context.RootContext;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
+ * 利用了Feign的扩展点
+ * 继承了Feign的Client接口,
  * @author xiaojing
  */
 public class SeataFeignClient implements Client {
@@ -54,13 +60,17 @@ public class SeataFeignClient implements Client {
 
 	@Override
 	public Response execute(Request request, Request.Options options) throws IOException {
-
+		// 处理请求: 将全局事务id写入header
 		Request modifiedRequest = getModifyRequest(request);
+		/**
+		 * 执行: 会被seata处理器拦截器拦截执行
+		 * @see SeataHandlerInterceptor#preHandle(HttpServletRequest, HttpServletResponse, Object)
+		 */
 		return this.delegate.execute(modifiedRequest, options);
 	}
 
 	private Request getModifyRequest(Request request) {
-
+		// 因为是同步的调用, 是同一个线程, 所以可以在线程上下文中拿到全局事务id
 		String xid = RootContext.getXID();
 
 		if (StringUtils.isEmpty(xid)) {
@@ -69,7 +79,7 @@ public class SeataFeignClient implements Client {
 
 		Map<String, Collection<String>> headers = new HashMap<>(MAP_SIZE);
 		headers.putAll(request.headers());
-
+		// 将全局事务id写入header, 放入请求中
 		List<String> seataXid = new ArrayList<>();
 		seataXid.add(xid);
 		headers.put(RootContext.KEY_XID, seataXid);
