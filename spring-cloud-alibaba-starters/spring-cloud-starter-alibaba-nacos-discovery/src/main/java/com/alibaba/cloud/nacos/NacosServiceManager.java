@@ -41,8 +41,15 @@ public class NacosServiceManager {
 
 	private volatile NamingMaintainService namingMaintainService;
 
+	/**
+	 * 获取服务注册的Service, 如果不存在, 构建一个新的, 存在则直接返回
+	 * @return
+	 */
 	public NamingService getNamingService() {
 		if (Objects.isNull(this.namingService)) {
+			/**
+			 * 通过Nacos的配置文件构建服务注册的Service
+			 */
 			buildNamingService(nacosDiscoveryProperties.getNacosProperties());
 		}
 		return namingService;
@@ -87,6 +94,9 @@ public class NacosServiceManager {
 		if (Objects.isNull(namingService)) {
 			synchronized (NacosServiceManager.class) {
 				if (Objects.isNull(namingService)) {
+					/**
+					 * 双重检验锁(DCL)创建服务注册的Service, 并赋值
+					 */
 					namingService = createNewNamingService(properties);
 				}
 			}
@@ -96,6 +106,10 @@ public class NacosServiceManager {
 
 	private NamingService createNewNamingService(Properties properties) {
 		try {
+			/**
+			 * 通过Nacos工厂类创建服务注册的Service
+			 * 当前文件头部import static了此方法, 所以这里能直接调用nacos源码的方法
+			 */
 			return createNamingService(properties);
 		}
 		catch (NacosException e) {

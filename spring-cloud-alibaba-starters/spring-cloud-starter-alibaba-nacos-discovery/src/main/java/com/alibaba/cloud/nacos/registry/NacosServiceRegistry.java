@@ -34,6 +34,9 @@ import org.springframework.util.StringUtils;
 import static org.springframework.util.ReflectionUtils.rethrowRuntimeException;
 
 /**
+ * 服务注册Nacos实现
+ * 实现了spring-cloud-commons.jar包的ServiceRegistry接口
+ * 这个接口提供了服务注册的方法, 实现类重写方法{@link NacosServiceRegistry#register(Registration)}, 微服务启动时会调用此方法注册.
  * @author xiaojing
  * @author <a href="mailto:mercyblitz@gmail.com">Mercy</a>
  * @author <a href="mailto:78552423@qq.com">eshun</a>
@@ -56,6 +59,10 @@ public class NacosServiceRegistry implements ServiceRegistry<Registration> {
 		this.nacosServiceManager = nacosServiceManager;
 	}
 
+	/**
+	 * 重写spring-cloud-commons.jar包的ServiceRegistry接口的方法, 实现服务注册
+	 * @param registration registration meta data
+	 */
 	@Override
 	public void register(Registration registration) {
 
@@ -64,6 +71,7 @@ public class NacosServiceRegistry implements ServiceRegistry<Registration> {
 			return;
 		}
 
+		// 获取服务注册的Service
 		NamingService namingService = namingService();
 		String serviceId = registration.getServiceId();
 		String group = nacosDiscoveryProperties.getGroup();
@@ -71,6 +79,7 @@ public class NacosServiceRegistry implements ServiceRegistry<Registration> {
 		Instance instance = getNacosInstanceFromRegistration(registration);
 
 		try {
+			// 通过Nacos的服务注册的Service, 注册服务实例
 			namingService.registerInstance(serviceId, group, instance);
 			log.info("nacos registry, {} {} {}:{} register finished", group, serviceId,
 					instance.getIp(), instance.getPort());
@@ -189,6 +198,7 @@ public class NacosServiceRegistry implements ServiceRegistry<Registration> {
 	}
 
 	private NamingService namingService() {
+		// 获取服务注册的Service
 		return nacosServiceManager.getNamingService();
 	}
 
